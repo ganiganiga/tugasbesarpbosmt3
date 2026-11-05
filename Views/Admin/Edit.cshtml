@@ -1,0 +1,17 @@
+@model Destination
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Edit Destinasi";
+}
+<form asp-action="Edit" asp-route-id="@Model.DestinationId" method="post" enctype="multipart/form-data" novalidate>
+    <input type="hidden" asp-for="DestinationId" />
+    <partial name="_DestinationForm" model="Model" />
+    <div class="form-actions">
+        <a class="btn btn-light" asp-action="Dashboard">Batal</a>
+        <button class="btn btn-green" type="submit"><partial name="_Icon" model='"check"' /> Simpan Perubahan</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

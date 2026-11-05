@@ -1,0 +1,16 @@
+@model Destination
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Tambah Destinasi";
+}
+<form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+    <partial name="_DestinationForm" model="Model" />
+    <div class="form-actions">
+        <a class="btn btn-light" asp-action="Dashboard">Batal</a>
+        <button class="btn btn-green" type="submit"><partial name="_Icon" model='"check"' /> Simpan Destinasi</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,81 @@
+@model Destination
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Description"] = (Model.Description ?? "").Length > 150 ? Model.Description.Substring(0, 150) + "…" : Model.Description;
+    var idn = new System.Globalization.CultureInfo("id-ID");
+    var img = string.IsNullOrWhiteSpace(Model.ImageUrl) ? Url.Content("~/images/placeholder-gunung.svg") : Model.ImageUrl;
+    var height = (int?)Model.Height;
+    var price = (decimal?)Model.TicketPrice;
+    var cats = Model.DestinationCategories?.Select(x => x.Category?.CategoryName).Where(n => !string.IsNullOrEmpty(n)).ToList() ?? new List<string>();
+    var facs = Model.DestinationFacilities?.Select(x => x.Facility?.FacilityName).Where(n => !string.IsNullOrEmpty(n)).ToList() ?? new List<string>();
+    var related = ViewBag.Related as IEnumerable<Destination>;
+    var mapsUrl = !string.IsNullOrWhiteSpace(Model.MapsUrl) && Model.MapsUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+        ? Model.MapsUrl
+        : "https://www.google.com/maps/search/?api=1&query=" + Uri.EscapeDataString(Model.Name + " " + Model.Region);
+    string Val(string s) => string.IsNullOrWhiteSpace(s) ? "Belum tersedia" : s;
+}
+
+<section class="detail-hero">
+    <img src="@img" alt="@Model.Name" />
+    <div class="container">
+        <div class="chips">@foreach (var c in cats) { <span class="chip">@c</span> }</div>
+        <h1>@Model.Name</h1>
+        <div class="meta"><partial name="_Icon" model='"pin"' /> @Model.Region, Jawa Barat
+            @if (height.HasValue && height > 0) { <span>&nbsp;·&nbsp;</span><partial name="_Icon" model='"mountain"' /> <span>± @height.Value.ToString("N0", idn) mdpl</span> }
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Beranda</a><span>/</span><a asp-controller="Destinations" asp-action="Index">Destinasi</a><span>/</span>@Model.Name
+    </nav>
+
+    <div class="detail-layout">
+        <div>
+            <div class="panel">
+                <h2>Tentang Destinasi</h2>
+                <p>@Model.Description</p>
+            </div>
+
+            <div class="panel">
+                <h2>Informasi Kunjungan</h2>
+                <div class="info-grid">
+                    <div class="info"><small>Wilayah</small><strong>@Val(Model.Region)</strong></div>
+                    <div class="info"><small>Ketinggian</small><strong>@(height.HasValue && height > 0 ? "± " + height.Value.ToString("N0", idn) + " mdpl" : "Belum tersedia")</strong></div>
+                    <div class="info"><small>Tingkat kesulitan</small><strong>@Val(Model.Difficulty?.ToString())</strong></div>
+                    <div class="info"><small>Harga tiket</small><strong>@(price.HasValue && price > 0 ? "Rp " + price.Value.ToString("N0", idn) : "Belum tersedia")</strong></div>
+                    <div class="info"><small>Jam operasional</small><strong>@Val(Model.OpeningHours)</strong></div>
+                    <div class="info"><small>Alamat</small><strong>@Val(Model.Address)</strong></div>
+                </div>
+                <p class="note">Harga tiket, jam operasional, dan akses dapat berubah. Konfirmasi ke pengelola resmi sebelum berkunjung.</p>
+            </div>
+
+            <div class="panel">
+                <h2>Fasilitas</h2>
+                @if (facs.Any())
+                {
+                    <ul class="facility-list">@foreach (var f in facs) { <li><partial name="_Icon" model='"check"' /> @f</li> }</ul>
+                }
+                else { <p class="muted">Data fasilitas belum tersedia.</p> }
+            </div>
+        </div>
+
+        <aside class="side-sticky">
+            <div class="panel">
+                <h2>Lokasi</h2>
+                <p class="muted">@Val(Model.Address)</p>
+                <a class="btn btn-brown btn-block" href="@mapsUrl" target="_blank" rel="noopener noreferrer"><partial name="_Icon" model='"pin"' /> Buka di Google Maps</a>
+                <a class="btn btn-light btn-block" style="margin-top:.6rem" asp-action="Index">← Kembali ke Katalog</a>
+            </div>
+        </aside>
+    </div>
+
+    @if (related != null && related.Any())
+    {
+        <section class="section" style="padding-bottom:0">
+            <div class="section-head"><h2>Destinasi Lainnya</h2></div>
+            <div class="grid">@foreach (var d in related.Take(4)) { <partial name="_DestinationCard" model="d" /> }</div>
+        </section>
+    }
+</div>

@@ -1,0 +1,74 @@
+@model IEnumerable<Destination>
+@{
+    ViewData["Title"] = "Katalog Destinasi";
+    ViewData["Description"] = "Cari dan filter destinasi gunung di Jawa Barat berdasarkan nama, wilayah, dan aktivitas.";
+    var q = Context.Request.Query["q"].ToString();
+    var region = Context.Request.Query["region"].ToString();
+    var category = Context.Request.Query["category"].ToString();
+    var regions = ViewBag.Regions as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var categories = (ViewBag.Categories as IEnumerable<Category>) ?? Enumerable.Empty<Category>();
+    var list = Model.ToList();
+    var filtered = !string.IsNullOrWhiteSpace(q + region + category);
+}
+
+<section class="page-hero">
+    <div class="container">
+        <p class="eyebrow" style="color:#f0dcc0">Katalog</p>
+        <h1>Katalog Destinasi Gunung</h1>
+        <p>Temukan gunung, kawah, camping ground, dan panorama terbaik di Jawa Barat.</p>
+    </div>
+</section>
+
+<div class="container filter-bar">
+    <form class="filter-form" method="get" asp-controller="Destinations" asp-action="Index" role="search">
+        <label class="search-field grow"><partial name="_Icon" model='"search"' /><input type="search" name="q" value="@q" placeholder="Cari nama destinasi…" aria-label="Cari destinasi" /></label>
+        <label class="search-field">
+            <partial name="_Icon" model='"compass"' />
+            <select name="region" aria-label="Wilayah" data-autosubmit>
+                <option value="">Semua Wilayah</option>
+                @foreach (var r in regions) { <option value="@r" selected="@(r == region)">@r</option> }
+            </select>
+        </label>
+        <label class="search-field">
+            <partial name="_Icon" model='"list"' />
+            <select name="category" aria-label="Aktivitas" data-autosubmit>
+                <option value="">Semua Aktivitas</option>
+                @foreach (var c in categories) { <option value="@c.CategoryName" selected="@(c.CategoryName == category)">@c.CategoryName</option> }
+            </select>
+        </label>
+        <button class="btn btn-brown" type="submit">Cari</button>
+        @if (filtered) { <a class="btn btn-light" asp-action="Index">Reset</a> }
+    </form>
+</div>
+
+<section class="section" style="padding-top:1rem">
+    <div class="container">
+        <div class="pills" aria-label="Filter aktivitas cepat">
+            <a class="pill @(string.IsNullOrEmpty(category) ? "active" : "")" asp-action="Index" asp-route-q="@q" asp-route-region="@region">Semua</a>
+            @foreach (var c in categories)
+            {
+                <a class="pill @(c.CategoryName == category ? "active" : "")" asp-action="Index" asp-route-q="@q" asp-route-region="@region" asp-route-category="@c.CategoryName">@c.CategoryName</a>
+            }
+        </div>
+
+        <div class="result-info">
+            <span><strong>@list.Count</strong> destinasi ditemukan@(string.IsNullOrWhiteSpace(q) ? "" : $" untuk “{q}”")</span>
+        </div>
+
+        @if (list.Any())
+        {
+            <div class="grid catalog-grid">
+                @foreach (var d in list) { <partial name="_DestinationCard" model="d" /> }
+            </div>
+        }
+        else
+        {
+            <div class="empty">
+                <partial name="_Icon" model='"search"' />
+                <h3>Destinasi tidak ditemukan</h3>
+                <p class="muted">Coba kata kunci lain atau ubah filter wilayah dan aktivitas.</p>
+                <a class="btn btn-brown" asp-action="Index">Lihat Semua Destinasi</a>
+            </div>
+        }
+    </div>
+</section>

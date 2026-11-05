@@ -1,0 +1,41 @@
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    string Active(params string[] a) => a.Contains(action, StringComparer.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>@ViewData["Title"] – Admin Jelajah Gunung Jabar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-body">
+    <div class="admin">
+        <aside class="sidebar" aria-label="Menu admin">
+            <a class="brand" asp-controller="Home" asp-action="Index"><partial name="_Icon" model='"mountain"' /><span>Jelajah<br />Gunung Jabar</span></a>
+            <nav class="side-nav">
+                <a class="@Active("Dashboard")" asp-controller="Admin" asp-action="Dashboard"><partial name="_Icon" model='"grid"' /> Dashboard</a>
+                <a class="@Active("Create","Edit")" asp-controller="Admin" asp-action="Create"><partial name="_Icon" model='"plus"' /> Tambah Destinasi</a>
+                <a asp-controller="Destinations" asp-action="Index" target="_blank"><partial name="_Icon" model='"external"' /> Lihat Situs</a>
+            </nav>
+            <div class="side-foot">Panel Admin · MVP</div>
+        </aside>
+        <div class="admin-main">
+            <header class="admin-top">
+                <button class="menu-btn" type="button" data-sidebar-toggle aria-label="Buka menu"><partial name="_Icon" model='"menu"' /></button>
+                <h1>@ViewData["Title"]</h1>
+                <div class="actions"><span class="muted">@(User.Identity?.Name ?? "Admin")</span><form class="logout-form" asp-controller="Account" asp-action="Logout" method="post"><button class="btn btn-light btn-sm" type="submit">Keluar</button></form></div>
+            </header>
+            <div class="admin-content">@RenderBody()</div>
+        </div>
+    </div>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

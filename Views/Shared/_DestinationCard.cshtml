@@ -1,0 +1,24 @@
+@model Destination
+@{
+    var img = string.IsNullOrWhiteSpace(Model.ImageUrl) ? Url.Content("~/images/placeholder-gunung.svg") : Model.ImageUrl;
+    var height = (int?)Model.Height;
+    var cat = Model.DestinationCategories?.Select(x => x.Category?.CategoryName).FirstOrDefault(n => !string.IsNullOrEmpty(n));
+    var desc = Model.Description ?? "";
+    var excerpt = desc.Length > 95 ? desc.Substring(0, 95).TrimEnd() + "…" : desc;
+}
+<article class="card">
+    <a class="card-media" asp-controller="Destinations" asp-action="Details" asp-route-id="@Model.DestinationId" tabindex="-1" aria-hidden="true">
+        <img src="@img" alt="@Model.Name" loading="lazy" />
+        @if (!string.IsNullOrEmpty(cat)) { <span class="chip">@cat</span> }
+    </a>
+    <div class="card-body">
+        <h3><a asp-controller="Destinations" asp-action="Details" asp-route-id="@Model.DestinationId">@Model.Name</a></h3>
+        <div class="meta"><partial name="_Icon" model='"pin"' /> @Model.Region</div>
+        @if (height.HasValue && height > 0)
+        {
+            <div class="meta"><partial name="_Icon" model='"mountain"' /> ± @height.Value.ToString("N0", new System.Globalization.CultureInfo("id-ID")) mdpl</div>
+        }
+        <p>@excerpt</p>
+        <a class="btn btn-outline btn-sm" asp-controller="Destinations" asp-action="Details" asp-route-id="@Model.DestinationId">Lihat Detail <partial name="_Icon" model='"arrow"' /></a>
+    </div>
+</article>

@@ -1,0 +1,74 @@
+@{
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string Active(string c) => string.Equals(ctrl, c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] – Jelajah Gunung Jabar</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Platform informasi wisata gunung dan kawasan pegunungan di Jawa Barat.")" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <partial name="_Icon" model='"mountain"' />
+                <span>Jelajah<br />Gunung Jabar</span>
+            </a>
+            <button class="nav-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Buka menu">
+                <partial name="_Icon" model='"menu"' />
+            </button>
+            <nav id="main-nav" class="main-nav" aria-label="Navigasi utama">
+                <a class="nav-link @Active("Home")" asp-controller="Home" asp-action="Index">Beranda</a>
+                <a class="nav-link @Active("Destinations")" asp-controller="Destinations" asp-action="Index">Destinasi</a>
+                <a class="nav-link" asp-controller="Home" asp-action="Index" asp-fragment="aktivitas">Aktivitas</a>
+                <a class="nav-link" asp-controller="Home" asp-action="Index" asp-fragment="tentang">Tentang Kami</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="btn btn-green btn-sm" asp-controller="Admin" asp-action="Dashboard">Dashboard Admin</a>
+                    <form class="logout-form" asp-controller="Account" asp-action="Logout" method="post"><button class="btn btn-light btn-sm" type="submit">Keluar</button></form>
+                }
+                else
+                {
+                    <a class="btn btn-brown btn-sm" asp-controller="Account" asp-action="Login">Masuk</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main>@RenderBody()</main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a class="brand" asp-controller="Home" asp-action="Index"><partial name="_Icon" model='"mountain"' /><span>Jelajah<br />Gunung Jabar</span></a>
+                    <p>Platform informasi wisata gunung dan kawasan pegunungan di Jawa Barat: hiking, camping, wisata kawah, sunrise &amp; panorama, hingga rekreasi pegunungan.</p>
+                </div>
+                <div>
+                    <h4>Jelajahi</h4>
+                    <a asp-controller="Home" asp-action="Index">Beranda</a>
+                    <a asp-controller="Destinations" asp-action="Index">Katalog Destinasi</a>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="aktivitas">Aktivitas</a>
+                </div>
+                <div>
+                    <h4>Informasi</h4>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="tentang">Tentang Kami</a>
+                    <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>
+                </div>
+            </div>
+            <p class="footer-note">© @DateTime.Now.Year Jelajah Gunung Jabar. Situs ini bersifat informasi, bukan marketplace dan tidak memproses pemesanan atau pembayaran. Harga, jam operasional, dan akses dapat berubah; periksa kembali sebelum berkunjung.</p>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

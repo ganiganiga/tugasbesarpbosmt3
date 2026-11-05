@@ -1,0 +1,125 @@
+@model IEnumerable<Destination>
+@{
+    ViewData["Title"] = "Beranda";
+    ViewData["Description"] = "Temukan destinasi gunung, kawah, camping, dan panorama alam terbaik di Jawa Barat.";
+    var regions = ViewBag.Regions as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var categories = (ViewBag.Categories as IEnumerable<Category>)?.Select(c => c.CategoryName).ToList() ?? new List<string>();
+    if (!categories.Any())
+    {
+        categories = new List<string> { "Hiking & Pendakian", "Camping", "Wisata Kawah", "Sunrise & Panorama", "Rekreasi Pegunungan" };
+    }
+    var featured = Model.Take(4).ToList();
+    var spot = Model.FirstOrDefault();
+}
+@functions {
+    static string IconFor(string name)
+    {
+        var n = (name ?? "").ToLowerInvariant();
+        if (n.Contains("hik") || n.Contains("daki")) return "hiking";
+        if (n.Contains("camp")) return "camping";
+        if (n.Contains("kawah")) return "crater";
+        if (n.Contains("sunrise") || n.Contains("panorama")) return "sunrise";
+        return "tree";
+    }
+}
+
+<section class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">Wisata Gunung Jawa Barat</p>
+        <h1>Temukan Keindahan Pegunungan Jawa Barat</h1>
+        <p class="lead">Jelajahi destinasi gunung, kawah, camping, hingga panorama alam terbaik di Jawa Barat.</p>
+        <a class="btn btn-brown" asp-controller="Destinations" asp-action="Index"><partial name="_Icon" model='"arrow"' /> Mulai Jelajah</a>
+    </div>
+    @if (spot != null)
+    {
+        <a class="hero-badge" asp-controller="Destinations" asp-action="Details" asp-route-id="@spot.DestinationId">
+            <partial name="_Icon" model='"mountain"' />
+            <span><strong>@spot.Name</strong><small>@spot.Region, Jawa Barat</small></span>
+        </a>
+    }
+</section>
+
+<form class="search-card" asp-controller="Destinations" asp-action="Index" method="get" role="search">
+    <label class="search-field grow"><partial name="_Icon" model='"pin"' /><input type="search" name="q" placeholder="Cari nama destinasi…" aria-label="Cari destinasi" /></label>
+    <label class="search-field">
+        <partial name="_Icon" model='"compass"' />
+        <select name="region" aria-label="Wilayah">
+            <option value="">Semua Wilayah</option>
+            @foreach (var r in regions) { <option value="@r">@r</option> }
+        </select>
+    </label>
+    <label class="search-field">
+        <partial name="_Icon" model='"list"' />
+        <select name="category" aria-label="Aktivitas">
+            <option value="">Semua Aktivitas</option>
+            @foreach (var c in categories) { <option value="@c">@c</option> }
+        </select>
+    </label>
+    <button class="btn btn-brown" type="submit"><partial name="_Icon" model='"search"' /> Cari</button>
+</form>
+
+<section class="section" id="aktivitas">
+    <div class="container">
+        <div class="activity-grid">
+            @foreach (var c in categories)
+            {
+                <a class="activity" asp-controller="Destinations" asp-action="Index" asp-route-category="@c">
+                    <span class="tile"><partial name="_Icon" model="IconFor(c)" /></span>
+                    @c
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top:1rem">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <h2>Destinasi Pilihan</h2>
+                <p>Rekomendasi wisata gunung dan pegunungan di Jawa Barat.</p>
+            </div>
+            <a class="btn btn-light btn-sm" asp-controller="Destinations" asp-action="Index">Lihat Semua Destinasi <partial name="_Icon" model='"arrow"' /></a>
+        </div>
+        @if (featured.Any())
+        {
+            <div class="grid">
+                @foreach (var d in featured) { <partial name="_DestinationCard" model="d" /> }
+            </div>
+        }
+        else
+        {
+            <div class="empty"><partial name="_Icon" model='"mountain"' /><h3>Belum ada destinasi</h3><p class="muted">Destinasi aktif akan tampil di sini.</p></div>
+        }
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="cta">
+            <div class="cta-media" role="img" aria-label="Tenda camping di padang rumput pegunungan"></div>
+            <div class="cta-body">
+                <p class="eyebrow">Rencanakan perjalananmu</p>
+                <h2>Siap Menjelajah Gunung Berikutnya?</h2>
+                <p>Bandingkan destinasi berdasarkan wilayah dan aktivitas, lalu buka lokasinya langsung di Google Maps.</p>
+                <a class="btn btn-brown" asp-controller="Destinations" asp-action="Index">Buka Katalog <partial name="_Icon" model='"arrow"' /></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt" id="tentang">
+    <div class="container">
+        <div class="about">
+            <p class="eyebrow">Tentang Kami</p>
+            <h2>Pusat informasi wisata gunung Jawa Barat</h2>
+            <p>Jelajah Gunung Jabar menyajikan informasi destinasi gunung dan kawasan pegunungan secara terstruktur agar mudah dicari, dibandingkan, dan dipersiapkan sebelum berkunjung.</p>
+        </div>
+        <div class="tips">
+            <div class="tip"><partial name="_Icon" model='"cloud"' /><h3>Cek Cuaca</h3><p>Pantau prakiraan cuaca sebelum berangkat, terutama untuk pendakian dan camping.</p></div>
+            <div class="tip"><partial name="_Icon" model='"bag"' /><h3>Bawa Perlengkapan</h3><p>Siapkan jaket, air minum, senter, dan perlengkapan sesuai aktivitas.</p></div>
+            <div class="tip"><partial name="_Icon" model='"shield"' /><h3>Verifikasi Informasi</h3><p>Harga tiket dan jam buka dapat berubah. Konfirmasi ke pengelola resmi.</p></div>
+            <div class="tip"><partial name="_Icon" model='"tree"' /><h3>Jaga Kelestarian</h3><p>Bawa pulang sampahmu dan ikuti aturan kawasan.</p></div>
+        </div>
+    </div>
+</section>

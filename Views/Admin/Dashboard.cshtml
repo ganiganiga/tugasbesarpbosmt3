@@ -1,0 +1,53 @@
+@model IEnumerable<Destination>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard";
+    var all = Model.ToList();
+    var active = all.Count(d => d.IsActive);
+    var regionCount = all.Select(d => d.Region).Where(r => !string.IsNullOrWhiteSpace(r)).Distinct().Count();
+}
+
+@if (TempData["Success"] is string ok) { <div class="alert alert-success" role="status">@ok</div> }
+@if (TempData["Error"] is string bad) { <div class="alert alert-error" role="alert">@bad</div> }
+
+<div class="stats">
+    <div class="stat"><span class="ico"><partial name="_Icon" model='"mountain"' /></span><div><strong>@all.Count</strong><span>Total Destinasi</span></div></div>
+    <div class="stat"><span class="ico"><partial name="_Icon" model='"eye"' /></span><div><strong>@active</strong><span>Aktif (tampil di katalog)</span></div></div>
+    <div class="stat brown"><span class="ico"><partial name="_Icon" model='"eyeoff"' /></span><div><strong>@(all.Count - active)</strong><span>Nonaktif</span></div></div>
+    <div class="stat brown"><span class="ico"><partial name="_Icon" model='"pin"' /></span><div><strong>@regionCount</strong><span>Wilayah</span></div></div>
+</div>
+
+<div class="toolbar">
+    <label class="search-field"><partial name="_Icon" model='"search"' /><input type="search" placeholder="Cari destinasi atau wilayah…" data-table-filter="#dest-table" aria-label="Filter tabel" /></label>
+    <a class="btn btn-green" asp-action="Create"><partial name="_Icon" model='"plus"' /> Tambah Destinasi</a>
+</div>
+
+<div class="table-wrap">
+    <table class="data" id="dest-table">
+        <thead><tr><th>Destinasi</th><th>Wilayah</th><th>Ketinggian</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+        @foreach (var d in all)
+        {
+            var img = string.IsNullOrWhiteSpace(d.ImageUrl) ? Url.Content("~/images/placeholder-gunung.svg") : d.ImageUrl;
+            var height = (int?)d.Height;
+            <tr>
+                <td data-label="Destinasi"><div class="cell-dest"><img src="@img" alt="" loading="lazy" /><div><strong>@d.Name</strong><small>@d.Address</small></div></div></td>
+                <td data-label="Wilayah">@d.Region</td>
+                <td data-label="Ketinggian">@(height.HasValue && height > 0 ? height.Value.ToString("N0", new System.Globalization.CultureInfo("id-ID")) + " mdpl" : "—")</td>
+                <td data-label="Status"><span class="badge @(d.IsActive ? "badge-on" : "badge-off")">@(d.IsActive ? "Aktif" : "Nonaktif")</span></td>
+                <td data-label="Aksi">
+                    <div class="actions">
+                        <a class="btn btn-light btn-sm" asp-controller="Destinations" asp-action="Details" asp-route-id="@d.DestinationId" target="_blank">Lihat</a>
+                        <a class="btn btn-outline btn-sm" asp-action="Edit" asp-route-id="@d.DestinationId">Edit</a>
+                        <form asp-action="ToggleActive" asp-route-id="@d.DestinationId" method="post" data-confirm="@(d.IsActive ? "Nonaktifkan destinasi ini? Destinasi tidak akan tampil di katalog publik." : "Aktifkan kembali destinasi ini?")">
+                            <button class="btn btn-sm @(d.IsActive ? "btn-danger" : "btn-green")" type="submit">@(d.IsActive ? "Nonaktifkan" : "Aktifkan")</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (!all.Any()) { <div class="empty" style="border:0"><partial name="_Icon" model='"mountain"' /><p class="muted">Belum ada destinasi. Mulai dengan menambahkan satu destinasi.</p></div> }
+    <div class="empty" data-table-empty hidden style="border:0"><p class="muted">Tidak ada data yang cocok.</p></div>
+</div>

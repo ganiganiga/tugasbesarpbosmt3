@@ -1,0 +1,30 @@
+@model string
+@{
+    var p = Model switch
+    {
+        "pin" => "<path d='M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z'/><circle cx='12' cy='9.5' r='2.5'/>",
+        "mountain" => "<path d='M3 19l6-10 4 6 2-3 6 7z'/>",
+        "arrow" => "<path d='M5 12h14M13 6l6 6-6 6'/>",
+        "search" => "<circle cx='11' cy='11' r='6.5'/><path d='M20 20l-4-4'/>",
+        "hiking" => "<circle cx='13' cy='4.5' r='1.8'/><path d='M12 8l-2 5 3 2 1 5M10 13l-3 7M12 8l3 3 3 1M9 10l-3 1'/>",
+        "camping" => "<path d='M3 20L12 5l9 15zM12 5v15M9 20l3-6 3 6'/>",
+        "crater" => "<path d='M3 20l6-9h6l6 9zM9 11l1.5 2h3L15 11'/><path d='M12 8c0-2 2-2 2-4'/>",
+        "sunrise" => "<path d='M3 18h18M6 18a6 6 0 0 1 12 0M12 5v3M4.5 9.5l2 2M19.5 9.5l-2 2'/>",
+        "tree" => "<path d='M12 3l5 7h-3l4 6H6l4-6H7zM12 16v5'/>",
+        "plus" => "<path d='M12 5v14M5 12h14'/>",
+        "edit" => "<path d='M4 20h4l11-11-4-4L4 16zM13.5 6.5l4 4'/>",
+        "eye" => "<path d='M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z'/><circle cx='12' cy='12' r='3'/>",
+        "eyeoff" => "<path d='M3 3l18 18M10.6 6.2A9.6 9.6 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 7.5A17 17 0 0 0 2 12s4 7 10 7a9.7 9.7 0 0 0 4-.9'/>",
+        "external" => "<path d='M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/>",
+        "check" => "<path d='M5 12l5 5 9-10'/>",
+        "menu" => "<path d='M4 7h16M4 12h16M4 17h16'/>",
+        "grid" => "<path d='M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'/>",
+        "compass" => "<circle cx='12' cy='12' r='9'/><path d='M15.5 8.5l-2 5-5 2 2-5z'/>",
+        "cloud" => "<path d='M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4.8 4.8 0 0 1 17 18z'/>",
+        "bag" => "<path d='M8 7a4 4 0 0 1 8 0v1h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h1zM9 14h6'/>",
+        "shield" => "<path d='M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'/><path d='M9 12l2 2 4-4'/>",
+        "list" => "<path d='M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01'/>",
+        _ => "<circle cx='12' cy='12' r='3'/>"
+    };
+}
+<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">@Html.Raw(p)</svg>

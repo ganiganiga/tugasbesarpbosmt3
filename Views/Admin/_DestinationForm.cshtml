@@ -1,0 +1,123 @@
+@model Destination
+@{
+    var regions = ViewBag.Regions as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var categories = ViewBag.Categories as IEnumerable<Category> ?? Enumerable.Empty<Category>();
+    var facilities = ViewBag.Facilities as IEnumerable<Facility> ?? Enumerable.Empty<Facility>();
+    var selCats = (ViewBag.SelectedCategoryIds as IEnumerable<int>)?.ToHashSet() ?? new HashSet<int>();
+    var selFacs = (ViewBag.SelectedFacilityIds as IEnumerable<int>)?.ToHashSet() ?? new HashSet<int>();
+    var hasImg = !string.IsNullOrWhiteSpace(Model.ImageUrl);
+    var difficulty = Model.Difficulty?.ToString() ?? "";
+}
+<div asp-validation-summary="ModelOnly"></div>
+
+<div class="panel">
+    <h2>Informasi Dasar</h2>
+    <div class="form-grid">
+        <div class="field full">
+            <label asp-for="Name">Nama destinasi *</label>
+            <input asp-for="Name" type="text" maxlength="150" placeholder="Contoh: Gunung Papandayan" />
+            <span asp-validation-for="Name" class="field-validation-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Region">Wilayah (kabupaten/kota) *</label>
+            <input asp-for="Region" type="text" list="region-list" placeholder="Contoh: Garut" />
+            <datalist id="region-list">@foreach (var r in regions) { <option value="@r"></option> }</datalist>
+            <span asp-validation-for="Region" class="field-validation-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Height">Ketinggian (mdpl)</label>
+            <input asp-for="Height" type="number" min="1" step="1" placeholder="2665" />
+            <span class="hint">Isi hanya jika sudah terverifikasi.</span>
+            <span asp-validation-for="Height" class="field-validation-error"></span>
+        </div>
+        <div class="field full">
+            <label asp-for="Description">Deskripsi *</label>
+            <textarea asp-for="Description" rows="7" maxlength="3000" data-counter="#desc-count"></textarea>
+            <div class="counter" id="desc-count">0 / 3000</div>
+            <span asp-validation-for="Description" class="field-validation-error"></span>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Informasi Kunjungan</h2>
+    <div class="form-grid">
+        <div class="field">
+            <label for="Difficulty">Tingkat kesulitan</label>
+            <select id="Difficulty" name="Difficulty">
+                <option value="">— Belum ditentukan —</option>
+                @foreach (var v in new[] { "Mudah", "Sedang", "Sulit" }) { <option value="@v" selected="@(difficulty == v)">@v</option> }
+            </select>
+            <span class="hint">Relevan untuk aktivitas pendakian.</span>
+        </div>
+        <div class="field">
+            <label asp-for="TicketPrice">Harga tiket (Rp)</label>
+            <input asp-for="TicketPrice" type="number" min="0" step="500" placeholder="0" />
+            <span class="hint">Isi jika sudah diperiksa; informasi dapat berubah.</span>
+            <span asp-validation-for="TicketPrice" class="field-validation-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="OpeningHours">Jam operasional</label>
+            <input asp-for="OpeningHours" type="text" placeholder="Contoh: 07.00 - 17.00 WIB" />
+            <span asp-validation-for="OpeningHours" class="field-validation-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="MapsUrl">Tautan Google Maps</label>
+            <input asp-for="MapsUrl" type="url" placeholder="https://maps.google.com/..." />
+            <span asp-validation-for="MapsUrl" class="field-validation-error"></span>
+        </div>
+        <div class="field full">
+            <label asp-for="Address">Alamat</label>
+            <input asp-for="Address" type="text" placeholder="Desa, kecamatan, kabupaten/kota" />
+            <span asp-validation-for="Address" class="field-validation-error"></span>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Foto Destinasi</h2>
+    <div class="form-grid">
+        <div class="field">
+            <label for="imageFile">Unggah foto</label>
+            <input type="file" id="imageFile" name="imageFile" accept="image/jpeg,image/png,image/webp" data-image-input />
+            <span class="hint">JPG, PNG, atau WebP · maks 5 MB.</span>
+            <span class="error-text" data-image-error></span>
+            <label for="ImageUrl" style="margin-top:.6rem">atau URL / path gambar</label>
+            <input asp-for="ImageUrl" type="text" placeholder="/images/destinasi/papandayan.jpg" />
+            <span asp-validation-for="ImageUrl" class="field-validation-error"></span>
+        </div>
+        <div class="field">
+            <span class="label">Pratinjau</span>
+            <img class="img-preview" data-image-preview src="@(hasImg ? Model.ImageUrl : "")" alt="Pratinjau foto destinasi" hidden="@(!hasImg)" />
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Kategori Aktivitas &amp; Fasilitas</h2>
+    <div class="field" style="margin-bottom:1.2rem">
+        <span class="label">Kategori aktivitas</span>
+        <div class="check-group">
+            @foreach (var c in categories)
+            {
+                <label class="check-pill"><input type="checkbox" name="selectedCategoryIds" value="@c.CategoryId" checked="@selCats.Contains(c.CategoryId)" /><span>@c.CategoryName</span></label>
+            }
+            @if (!categories.Any()) { <span class="muted">Belum ada kategori.</span> }
+        </div>
+    </div>
+    <div class="field">
+        <span class="label">Fasilitas</span>
+        <div class="check-group">
+            @foreach (var f in facilities)
+            {
+                <label class="check-pill"><input type="checkbox" name="selectedFacilityIds" value="@f.FacilityId" checked="@selFacs.Contains(f.FacilityId)" /><span>@f.FacilityName</span></label>
+            }
+            @if (!facilities.Any()) { <span class="muted">Belum ada fasilitas.</span> }
+        </div>
+        <span class="hint">Centang hanya fasilitas yang sudah diverifikasi.</span>
+    </div>
+</div>
+
+<div class="panel">
+    <label class="switch"><input asp-for="IsActive" /> Tampilkan di katalog publik (aktif)</label>
+</div>
