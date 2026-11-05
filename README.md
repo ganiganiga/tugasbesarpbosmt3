@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Jelajah Gunung Jabar - Paket UI (Razor View + CSS + JS)
 
 Hanya View, CSS, JS, dan 1 gambar placeholder. Tidak ada project, Model, atau database baru.
@@ -51,3 +52,7 @@ if (!string.IsNullOrWhiteSpace(category))
     query = query.Where(d => d.DestinationCategories.Any(dc => dc.Category.CategoryName == category));
 ```
 Lindungi AdminController dengan `[Authorize(Roles = "Admin")]`.
+=======
+# tugasbesarpbosmt3
+Tugas besar Pemrograman II
+>>>>>>> ef626d322aad4cb34e064a93303715aeb4f5118f
