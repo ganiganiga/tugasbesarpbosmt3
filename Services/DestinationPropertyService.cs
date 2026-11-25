@@ -1,8 +1,8 @@
 
 using System;
-using Jelajah.Models;
+using TA_sem3.Models;
 
-namespace Jelajah.Services
+namespace TA_sem3.Services
 {
     public class DestinationPropertyService
     {
