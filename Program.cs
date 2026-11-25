@@ -25,6 +25,12 @@ builder.Services.ConfigureApplicationCookie(o =>
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<DestinationPropertyService>();
+
+builder.Services.AddScoped<DestinationActionService>();
+
+builder.Services.AddScoped<DestinationFilterDictionary>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
