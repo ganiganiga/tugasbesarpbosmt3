@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 *.swp
 
 wwwroot/images/destinasi/
+
+.vs/
+bin/
+obj/
